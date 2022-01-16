@@ -1,0 +1,9 @@
+{
+  "econApp": {
+    "Stato": {
+      "null": "",
+      "NON_PAGATA": "NON_PAGATA",
+      "PAGATA": "PAGATA"
+    }
+  }
+}

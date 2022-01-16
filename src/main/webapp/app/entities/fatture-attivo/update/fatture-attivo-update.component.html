@@ -1,0 +1,181 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <form name="editForm" role="form" novalidate (ngSubmit)="save()" [formGroup]="editForm">
+      <h2
+        id="jhi-fatture-attivo-heading"
+        data-cy="FattureAttivoCreateUpdateHeading"
+        jhiTranslate="econApp.fattureAttivo.home.createOrEditLabel"
+      >
+        Create or edit a Fatture Attivo
+      </h2>
+
+      <div>
+        <jhi-alert-error></jhi-alert-error>
+
+        <div class="form-group" [hidden]="editForm.get('id')!.value == null">
+          <label class="form-control-label" jhiTranslate="global.field.id" for="field_id">ID</label>
+          <input type="number" class="form-control" name="id" id="field_id" data-cy="id" formControlName="id" [readonly]="true" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.numeroFattura" for="field_numeroFattura"
+            >Numero Fattura</label
+          >
+          <input
+            type="number"
+            class="form-control"
+            name="numeroFattura"
+            id="field_numeroFattura"
+            data-cy="numeroFattura"
+            formControlName="numeroFattura"
+          />
+          <div
+            *ngIf="
+              editForm.get('numeroFattura')!.invalid && (editForm.get('numeroFattura')!.dirty || editForm.get('numeroFattura')!.touched)
+            "
+          >
+            <small
+              class="form-text text-danger"
+              *ngIf="editForm.get('numeroFattura')?.errors?.required"
+              jhiTranslate="entity.validation.required"
+            >
+              This field is required.
+            </small>
+            <small
+              class="form-text text-danger"
+              [hidden]="!editForm.get('numeroFattura')?.errors?.number"
+              jhiTranslate="entity.validation.number"
+            >
+              This field should be a number.
+            </small>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.ragSociale" for="field_ragSociale">Rag Sociale</label>
+          <input
+            type="text"
+            class="form-control"
+            name="ragSociale"
+            id="field_ragSociale"
+            data-cy="ragSociale"
+            formControlName="ragSociale"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.nomeCliente" for="field_nomeCliente">Nome Cliente</label>
+          <input
+            type="text"
+            class="form-control"
+            name="nomeCliente"
+            id="field_nomeCliente"
+            data-cy="nomeCliente"
+            formControlName="nomeCliente"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.imponibile" for="field_imponibile">Imponibile</label>
+          <input
+            type="number"
+            class="form-control"
+            name="imponibile"
+            id="field_imponibile"
+            data-cy="imponibile"
+            formControlName="imponibile"
+          />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.iva" for="field_iva">Iva</label>
+          <input type="number" class="form-control" name="iva" id="field_iva" data-cy="iva" formControlName="iva" />
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.stato" for="field_stato">Stato</label>
+          <select class="form-control" name="stato" formControlName="stato" id="field_stato" data-cy="stato">
+            <option [ngValue]="null">{{ 'econApp.Stato.null' | translate }}</option>
+            <option *ngFor="let stato of statoValues" [value]="stato">{{ 'econApp.Stato.' + stato | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.dataEmissione" for="field_dataEmissione"
+            >Data Emissione</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_dataEmissione"
+              data-cy="dataEmissione"
+              type="datetime-local"
+              class="form-control"
+              name="dataEmissione"
+              formControlName="dataEmissione"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.dataPagamento" for="field_dataPagamento"
+            >Data Pagamento</label
+          >
+          <div class="d-flex">
+            <input
+              id="field_dataPagamento"
+              data-cy="dataPagamento"
+              type="datetime-local"
+              class="form-control"
+              name="dataPagamento"
+              formControlName="dataPagamento"
+              placeholder="YYYY-MM-DD HH:mm"
+            />
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.cliente" for="field_cliente">Cliente</label>
+          <select class="form-control" id="field_cliente" data-cy="cliente" name="cliente" formControlName="cliente">
+            <option [ngValue]="null"></option>
+            <option
+              [ngValue]="clienteOption.id === editForm.get('cliente')!.value?.id ? editForm.get('cliente')!.value : clienteOption"
+              *ngFor="let clienteOption of clientesSharedCollection; trackBy: trackClienteById"
+            >
+              {{ clienteOption.nomeCliente }}
+            </option>
+          </select>
+        </div>
+
+        <div class="form-group">
+          <label class="form-control-label" jhiTranslate="econApp.fattureAttivo.cantiere" for="field_cantiere">Cantiere</label>
+          <select class="form-control" id="field_cantiere" data-cy="cantiere" name="cantiere" formControlName="cantiere">
+            <option [ngValue]="null"></option>
+            <option
+              [ngValue]="cantiereOption.id === editForm.get('cantiere')!.value?.id ? editForm.get('cantiere')!.value : cantiereOption"
+              *ngFor="let cantiereOption of cantieresSharedCollection; trackBy: trackCantiereById"
+            >
+              {{ cantiereOption.nomeCantiere }}
+            </option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <button type="button" id="cancel-save" data-cy="entityCreateCancelButton" class="btn btn-secondary" (click)="previousState()">
+          <fa-icon icon="ban"></fa-icon>&nbsp;<span jhiTranslate="entity.action.cancel">Cancel</span>
+        </button>
+
+        <button
+          type="submit"
+          id="save-entity"
+          data-cy="entityCreateSaveButton"
+          [disabled]="editForm.invalid || isSaving"
+          class="btn btn-primary"
+        >
+          <fa-icon icon="save"></fa-icon>&nbsp;<span jhiTranslate="entity.action.save">Save</span>
+        </button>
+      </div>
+    </form>
+  </div>
+</div>

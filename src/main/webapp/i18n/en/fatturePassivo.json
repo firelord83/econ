@@ -1,0 +1,34 @@
+{
+  "econApp": {
+    "fatturePassivo": {
+      "home": {
+        "title": "Fatture Passivos",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Fatture Passivo",
+        "createOrEditLabel": "Create or edit a Fatture Passivo",
+        "search": "Search for Fatture Passivo",
+        "notFound": "No Fatture Passivos found"
+      },
+      "created": "A new Fatture Passivo is created with identifier {{ param }}",
+      "updated": "A Fatture Passivo is updated with identifier {{ param }}",
+      "deleted": "A Fatture Passivo is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Fatture Passivo {{ id }}?"
+      },
+      "detail": {
+        "title": "Fatture Passivo"
+      },
+      "id": "ID",
+      "numeroFattura": "Numero Fattura",
+      "ragSociale": "Rag Sociale",
+      "nomeFornitore": "Nome Fornitore",
+      "imponibile": "Imponibile",
+      "iva": "Iva",
+      "stato": "Stato",
+      "dataEmissione": "Data Emissione",
+      "dataPagamento": "Data Pagamento",
+      "fornitore": "Fornitore",
+      "cantiere": "Cantiere"
+    }
+  }
+}

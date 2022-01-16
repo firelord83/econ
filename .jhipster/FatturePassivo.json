@@ -1,0 +1,65 @@
+{
+  "name": "FatturePassivo",
+  "fields": [
+    {
+      "fieldName": "numeroFattura",
+      "fieldType": "Long",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "ragSociale",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "nomeFornitore",
+      "fieldType": "String"
+    },
+    {
+      "fieldName": "imponibile",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "iva",
+      "fieldType": "Long"
+    },
+    {
+      "fieldName": "stato",
+      "fieldType": "Stato",
+      "fieldValues": "NON_PAGATA,PAGATA"
+    },
+    {
+      "fieldName": "dataEmissione",
+      "fieldType": "Instant"
+    },
+    {
+      "fieldName": "dataPagamento",
+      "fieldType": "Instant"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "fornitore",
+      "otherEntityRelationshipName": "fattura",
+      "relationshipName": "fornitore",
+      "otherEntityField": "nomeFornitore"
+    },
+    {
+      "relationshipType": "many-to-one",
+      "otherEntityName": "cantiere",
+      "otherEntityRelationshipName": "pfattura",
+      "relationshipName": "cantiere",
+      "otherEntityField": "nomeCantiere"
+    }
+  ],
+  "entityTableName": "fatture_passivo",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "changelogDate": "20220116160701"
+}

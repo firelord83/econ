@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<databaseChangeLog
+    xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.6.xsd">
+    <!--
+        Added the constraints for entity FatturePassivo.
+    -->
+    <changeSet id="20220116160701-2" author="jhipster">
+
+        <addForeignKeyConstraint baseColumnNames="fornitore_id"
+                                 baseTableName="fatture_passivo"
+                                 constraintName="fk_fatture_passivo__fornitore_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="fornitore"/>
+
+        <addForeignKeyConstraint baseColumnNames="cantiere_id"
+                                 baseTableName="fatture_passivo"
+                                 constraintName="fk_fatture_passivo__cantiere_id"
+                                 referencedColumnNames="id"
+                                 referencedTableName="cantiere"/>
+    </changeSet>
+</databaseChangeLog>

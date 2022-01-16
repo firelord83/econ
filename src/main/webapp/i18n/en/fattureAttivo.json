@@ -1,0 +1,34 @@
+{
+  "econApp": {
+    "fattureAttivo": {
+      "home": {
+        "title": "Fatture Attivos",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Fatture Attivo",
+        "createOrEditLabel": "Create or edit a Fatture Attivo",
+        "search": "Search for Fatture Attivo",
+        "notFound": "No Fatture Attivos found"
+      },
+      "created": "A new Fatture Attivo is created with identifier {{ param }}",
+      "updated": "A Fatture Attivo is updated with identifier {{ param }}",
+      "deleted": "A Fatture Attivo is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Fatture Attivo {{ id }}?"
+      },
+      "detail": {
+        "title": "Fatture Attivo"
+      },
+      "id": "ID",
+      "numeroFattura": "Numero Fattura",
+      "ragSociale": "Rag Sociale",
+      "nomeCliente": "Nome Cliente",
+      "imponibile": "Imponibile",
+      "iva": "Iva",
+      "stato": "Stato",
+      "dataEmissione": "Data Emissione",
+      "dataPagamento": "Data Pagamento",
+      "cliente": "Cliente",
+      "cantiere": "Cantiere"
+    }
+  }
+}

@@ -1,0 +1,11 @@
+id;numero_fattura;rag_sociale;nome_fornitore;imponibile;iva;stato;data_emissione;data_pagamento
+1;95476;Drive silver monitor;redundant Savings;91835;87300;PAGATA;2022-01-16T06:09:27;2022-01-15T21:51:08
+2;43494;Graphic;Consultant envisioneer;12016;53977;NON_PAGATA;2022-01-16T12:08:12;2022-01-15T18:35:29
+3;4424;algorithm Ball Republic;Gibraltar array;23260;86447;NON_PAGATA;2022-01-15T22:42:45;2022-01-16T14:50:16
+4;9795;database Decentralized workforce;programming;59871;93839;PAGATA;2022-01-16T01:12:53;2022-01-16T10:29:38
+5;99378;Metical Chair SDD;Pants e-business Plastic;26772;80278;PAGATA;2022-01-16T10:53:30;2022-01-16T14:44:18
+6;22426;overriding hacking;Cheese maximize;68447;49564;PAGATA;2022-01-16T01:21:37;2022-01-16T03:06:11
+7;61767;back-end synergies Awesome;Outdoors Fresh 24;59433;8894;PAGATA;2022-01-16T04:02:13;2022-01-16T00:52:39
+8;68544;Bike;explicit Squares deposit;30032;2658;PAGATA;2022-01-15T18:30:05;2022-01-15T19:41:34
+9;19092;UAE;Functionality;88221;70228;NON_PAGATA;2022-01-16T14:55:07;2022-01-16T14:37:23
+10;64576;Salad;monitor SDD;1720;69140;NON_PAGATA;2022-01-16T09:52:12;2022-01-15T23:11:51

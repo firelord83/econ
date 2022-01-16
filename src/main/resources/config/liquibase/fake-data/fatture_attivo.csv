@@ -1,0 +1,11 @@
+id;numero_fattura;rag_sociale;nome_cliente;imponibile;iva;stato;data_emissione;data_pagamento
+1;52112;Marketing Identity;Account;22320;18948;PAGATA;2022-01-16T13:26:28;2022-01-16T15:00:44
+2;7260;markets Outdoors;Account Bedfordshire;59379;69131;NON_PAGATA;2022-01-16T12:16:16;2022-01-16T15:15:14
+3;2945;magnetic Central card;Sports as models;84876;38892;NON_PAGATA;2022-01-15T16:52:00;2022-01-15T20:01:23
+4;80440;extensible Berkshire Accountability;Granite;71855;28105;NON_PAGATA;2022-01-16T13:34:53;2022-01-16T07:19:25
+5;57675;International Books Technician;tan orchid Generic;41871;12543;PAGATA;2022-01-16T04:12:10;2022-01-15T20:47:53
+6;8194;e-services;Organic Canyon Florida;1888;48494;PAGATA;2022-01-16T14:17:05;2022-01-16T06:49:52
+7;65695;Avon;wireless;69260;64216;NON_PAGATA;2022-01-16T08:12:45;2022-01-16T03:20:42
+8;13565;service-desk;Estates green;37331;39976;NON_PAGATA;2022-01-16T09:52:28;2022-01-15T23:48:35
+9;3978;Customer Cambridgeshire;Facilitator blockchains bypass;10592;46957;NON_PAGATA;2022-01-16T11:22:29;2022-01-16T00:00:26
+10;92197;Visionary navigating Rupee;Coordinator Account compressing;10697;3868;PAGATA;2022-01-16T15:09:50;2022-01-15T22:14:12
