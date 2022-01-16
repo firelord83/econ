@@ -11,6 +11,7 @@ entity FattureAttivo {
 }
 
 filter FattureAttivo
+service FattureAttivo with serviceClass
 
 entity FatturePassivo {
 	numeroFattura Long required,
@@ -24,6 +25,7 @@ entity FatturePassivo {
 }
 
 filter FatturePassivo
+service FatturePassivo with serviceClass
 
 entity Cliente {
 	nomeCliente String required,
