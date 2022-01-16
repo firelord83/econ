@@ -1,0 +1,72 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="fatturePassivo">
+      <h2 data-cy="fatturePassivoDetailsHeading"><span jhiTranslate="econApp.fatturePassivo.detail.title">Fatture Passivo</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.numeroFattura">Numero Fattura</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.numeroFattura }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.ragSociale">Rag Sociale</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.ragSociale }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.nomeFornitore">Nome Fornitore</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.nomeFornitore }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.imponibile">Imponibile</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.imponibile }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.iva">Iva</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.iva }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.stato">Stato</span></dt>
+        <dd>
+          <span jhiTranslate="{{ 'econApp.Stato.' + fatturePassivo.stato }}">{{ fatturePassivo.stato }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.dataEmissione">Data Emissione</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.dataEmissione | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.dataPagamento">Data Pagamento</span></dt>
+        <dd>
+          <span>{{ fatturePassivo.dataPagamento | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.fornitore">Fornitore</span></dt>
+        <dd>
+          <div *ngIf="fatturePassivo.fornitore">
+            <a [routerLink]="['/fornitore', fatturePassivo.fornitore?.id, 'view']">{{ fatturePassivo.fornitore?.nomeFornitore }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="econApp.fatturePassivo.cantiere">Cantiere</span></dt>
+        <dd>
+          <div *ngIf="fatturePassivo.cantiere">
+            <a [routerLink]="['/cantiere', fatturePassivo.cantiere?.id, 'view']">{{ fatturePassivo.cantiere?.nomeCantiere }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/fatture-passivo', fatturePassivo.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

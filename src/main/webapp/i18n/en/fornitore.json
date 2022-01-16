@@ -1,0 +1,28 @@
+{
+  "econApp": {
+    "fornitore": {
+      "home": {
+        "title": "Fornitores",
+        "refreshListLabel": "Refresh list",
+        "createLabel": "Create a new Fornitore",
+        "createOrEditLabel": "Create or edit a Fornitore",
+        "search": "Search for Fornitore",
+        "notFound": "No Fornitores found"
+      },
+      "created": "A new Fornitore is created with identifier {{ param }}",
+      "updated": "A Fornitore is updated with identifier {{ param }}",
+      "deleted": "A Fornitore is deleted with identifier {{ param }}",
+      "delete": {
+        "question": "Are you sure you want to delete Fornitore {{ id }}?"
+      },
+      "detail": {
+        "title": "Fornitore"
+      },
+      "id": "ID",
+      "nomeFornitore": "Nome Fornitore",
+      "indirizzo": "Indirizzo",
+      "tipo": "Tipo",
+      "fattura": "Fattura"
+    }
+  }
+}

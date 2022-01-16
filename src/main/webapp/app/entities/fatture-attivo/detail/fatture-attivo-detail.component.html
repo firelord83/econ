@@ -1,0 +1,72 @@
+<div class="row justify-content-center">
+  <div class="col-8">
+    <div *ngIf="fattureAttivo">
+      <h2 data-cy="fattureAttivoDetailsHeading"><span jhiTranslate="econApp.fattureAttivo.detail.title">Fatture Attivo</span></h2>
+
+      <hr />
+
+      <jhi-alert-error></jhi-alert-error>
+
+      <jhi-alert></jhi-alert>
+
+      <dl class="row-md jh-entity-details">
+        <dt><span jhiTranslate="global.field.id">ID</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.id }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.numeroFattura">Numero Fattura</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.numeroFattura }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.ragSociale">Rag Sociale</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.ragSociale }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.nomeCliente">Nome Cliente</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.nomeCliente }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.imponibile">Imponibile</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.imponibile }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.iva">Iva</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.iva }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.stato">Stato</span></dt>
+        <dd>
+          <span jhiTranslate="{{ 'econApp.Stato.' + fattureAttivo.stato }}">{{ fattureAttivo.stato }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.dataEmissione">Data Emissione</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.dataEmissione | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.dataPagamento">Data Pagamento</span></dt>
+        <dd>
+          <span>{{ fattureAttivo.dataPagamento | formatMediumDatetime }}</span>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.cliente">Cliente</span></dt>
+        <dd>
+          <div *ngIf="fattureAttivo.cliente">
+            <a [routerLink]="['/cliente', fattureAttivo.cliente?.id, 'view']">{{ fattureAttivo.cliente?.nomeCliente }}</a>
+          </div>
+        </dd>
+        <dt><span jhiTranslate="econApp.fattureAttivo.cantiere">Cantiere</span></dt>
+        <dd>
+          <div *ngIf="fattureAttivo.cantiere">
+            <a [routerLink]="['/cantiere', fattureAttivo.cantiere?.id, 'view']">{{ fattureAttivo.cantiere?.nomeCantiere }}</a>
+          </div>
+        </dd>
+      </dl>
+
+      <button type="submit" (click)="previousState()" class="btn btn-info" data-cy="entityDetailsBackButton">
+        <fa-icon icon="arrow-left"></fa-icon>&nbsp;<span jhiTranslate="entity.action.back">Back</span>
+      </button>
+
+      <button type="button" [routerLink]="['/fatture-attivo', fattureAttivo.id, 'edit']" class="btn btn-primary">
+        <fa-icon icon="pencil-alt"></fa-icon>&nbsp;<span jhiTranslate="entity.action.edit">Edit</span>
+      </button>
+    </div>
+  </div>
+</div>

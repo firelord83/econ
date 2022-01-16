@@ -42,7 +42,9 @@
     "clientTheme": "none",
     "clientThemeVariant": "",
     "reactive": false,
-    "enableGradleEnterprise": false
+    "enableGradleEnterprise": false,
+    "entities": ["FattureAttivo", "FatturePassivo", "Cliente", "Fornitore", "Cantiere"],
+    "lastLiquibaseTimestamp": 1642349224000
   },
   "git-provider": "GitHub",
   "git-company": "firelord83",

@@ -1,0 +1,40 @@
+{
+  "name": "Cantiere",
+  "fields": [
+    {
+      "fieldName": "nomeCantiere",
+      "fieldType": "String",
+      "fieldValidateRules": ["required"]
+    },
+    {
+      "fieldName": "indirizzo",
+      "fieldType": "String"
+    }
+  ],
+  "relationships": [
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "fattureAttivo",
+      "otherEntityRelationshipName": "cantiere",
+      "relationshipName": "afattura",
+      "otherEntityField": "numeroFattura"
+    },
+    {
+      "relationshipType": "one-to-many",
+      "otherEntityName": "fatturePassivo",
+      "otherEntityRelationshipName": "cantiere",
+      "relationshipName": "pfattura",
+      "otherEntityField": "numeroFattura"
+    }
+  ],
+  "entityTableName": "cantiere",
+  "dto": "no",
+  "pagination": "no",
+  "service": "no",
+  "jpaMetamodelFiltering": false,
+  "fluentMethods": true,
+  "readOnly": false,
+  "embedded": false,
+  "applications": "*",
+  "changelogDate": "20220116160704"
+}
