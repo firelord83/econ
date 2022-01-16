@@ -10,6 +10,8 @@ entity FattureAttivo {
     dataPagamento Instant
 }
 
+filter FattureAttivo
+
 entity FatturePassivo {
 	numeroFattura Long required,
     ragSociale String,
@@ -20,6 +22,8 @@ entity FatturePassivo {
     dataEmissione Instant,
     dataPagamento Instant
 }
+
+filter FatturePassivo
 
 entity Cliente {
 	nomeCliente String required,
