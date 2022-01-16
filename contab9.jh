@@ -1,0 +1,60 @@
+
+entity FattureAttivo {
+	numeroFattura Long required,
+    ragSociale String,
+    nomeCliente String,
+    imponibile Long,
+    iva Long,
+    stato Stato,
+    dataEmissione Instant,
+    dataPagamento Instant
+}
+
+entity FatturePassivo {
+	numeroFattura Long required,
+    ragSociale String,
+    nomeFornitore String,
+    imponibile Long,
+    iva Long,
+    stato Stato,
+    dataEmissione Instant,
+    dataPagamento Instant
+}
+
+entity Cliente {
+	nomeCliente String required,
+    indirizzo String,
+    tipo String
+}
+
+entity Fornitore {
+	nomeFornitore String required,
+    indirizzo String,
+    tipo String
+}
+
+entity Cantiere {
+	nomeCantiere String required,
+    indirizzo String
+}
+
+enum Stato {
+    NON_PAGATA, PAGATA
+}
+
+relationship ManyToOne {
+  FattureAttivo{cliente(nomeCliente)} to Cliente{fattura(numeroFattura)}
+}
+
+relationship ManyToOne {
+  FatturePassivo{fornitore(nomeFornitore)} to Fornitore{fattura(numeroFattura)}
+}
+
+relationship ManyToOne {
+  FattureAttivo{cantiere(nomeCantiere)} to Cantiere{afattura(numeroFattura)}
+}
+
+relationship ManyToOne {
+  FatturePassivo{cantiere(nomeCantiere)} to Cantiere{pfattura(numeroFattura)}
+}
+
