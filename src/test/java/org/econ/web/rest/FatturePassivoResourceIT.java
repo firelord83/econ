@@ -15,10 +15,13 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.stream.Stream;
 import javax.persistence.EntityManager;
 import org.econ.IntegrationTest;
+import org.econ.domain.Cantiere;
 import org.econ.domain.FatturePassivo;
+import org.econ.domain.Fornitore;
 import org.econ.domain.enumeration.Stato;
 import org.econ.repository.FatturePassivoRepository;
 import org.econ.repository.search.FatturePassivoSearchRepository;
+import org.econ.service.criteria.FatturePassivoCriteria;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -42,6 +45,7 @@ class FatturePassivoResourceIT {
 
     private static final Long DEFAULT_NUMERO_FATTURA = 1L;
     private static final Long UPDATED_NUMERO_FATTURA = 2L;
+    private static final Long SMALLER_NUMERO_FATTURA = 1L - 1L;
 
     private static final String DEFAULT_RAG_SOCIALE = "AAAAAAAAAA";
     private static final String UPDATED_RAG_SOCIALE = "BBBBBBBBBB";
@@ -51,9 +55,11 @@ class FatturePassivoResourceIT {
 
     private static final Long DEFAULT_IMPONIBILE = 1L;
     private static final Long UPDATED_IMPONIBILE = 2L;
+    private static final Long SMALLER_IMPONIBILE = 1L - 1L;
 
     private static final Long DEFAULT_IVA = 1L;
     private static final Long UPDATED_IVA = 2L;
+    private static final Long SMALLER_IVA = 1L - 1L;
 
     private static final Stato DEFAULT_STATO = Stato.NON_PAGATA;
     private static final Stato UPDATED_STATO = Stato.PAGATA;
@@ -245,6 +251,745 @@ class FatturePassivoResourceIT {
             .andExpect(jsonPath("$.stato").value(DEFAULT_STATO.toString()))
             .andExpect(jsonPath("$.dataEmissione").value(DEFAULT_DATA_EMISSIONE.toString()))
             .andExpect(jsonPath("$.dataPagamento").value(DEFAULT_DATA_PAGAMENTO.toString()));
+    }
+
+    @Test
+    @Transactional
+    void getFatturePassivosByIdFiltering() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        Long id = fatturePassivo.getId();
+
+        defaultFatturePassivoShouldBeFound("id.equals=" + id);
+        defaultFatturePassivoShouldNotBeFound("id.notEquals=" + id);
+
+        defaultFatturePassivoShouldBeFound("id.greaterThanOrEqual=" + id);
+        defaultFatturePassivoShouldNotBeFound("id.greaterThan=" + id);
+
+        defaultFatturePassivoShouldBeFound("id.lessThanOrEqual=" + id);
+        defaultFatturePassivoShouldNotBeFound("id.lessThan=" + id);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura equals to DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.equals=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura equals to UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.equals=" + UPDATED_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura not equals to DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.notEquals=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura not equals to UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.notEquals=" + UPDATED_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura in DEFAULT_NUMERO_FATTURA or UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.in=" + DEFAULT_NUMERO_FATTURA + "," + UPDATED_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura equals to UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.in=" + UPDATED_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura is not null
+        defaultFatturePassivoShouldBeFound("numeroFattura.specified=true");
+
+        // Get all the fatturePassivoList where numeroFattura is null
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura is greater than or equal to DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.greaterThanOrEqual=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura is greater than or equal to UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.greaterThanOrEqual=" + UPDATED_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura is less than or equal to DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.lessThanOrEqual=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura is less than or equal to SMALLER_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.lessThanOrEqual=" + SMALLER_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsLessThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura is less than DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.lessThan=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura is less than UPDATED_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.lessThan=" + UPDATED_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNumeroFatturaIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where numeroFattura is greater than DEFAULT_NUMERO_FATTURA
+        defaultFatturePassivoShouldNotBeFound("numeroFattura.greaterThan=" + DEFAULT_NUMERO_FATTURA);
+
+        // Get all the fatturePassivoList where numeroFattura is greater than SMALLER_NUMERO_FATTURA
+        defaultFatturePassivoShouldBeFound("numeroFattura.greaterThan=" + SMALLER_NUMERO_FATTURA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale equals to DEFAULT_RAG_SOCIALE
+        defaultFatturePassivoShouldBeFound("ragSociale.equals=" + DEFAULT_RAG_SOCIALE);
+
+        // Get all the fatturePassivoList where ragSociale equals to UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldNotBeFound("ragSociale.equals=" + UPDATED_RAG_SOCIALE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale not equals to DEFAULT_RAG_SOCIALE
+        defaultFatturePassivoShouldNotBeFound("ragSociale.notEquals=" + DEFAULT_RAG_SOCIALE);
+
+        // Get all the fatturePassivoList where ragSociale not equals to UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldBeFound("ragSociale.notEquals=" + UPDATED_RAG_SOCIALE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale in DEFAULT_RAG_SOCIALE or UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldBeFound("ragSociale.in=" + DEFAULT_RAG_SOCIALE + "," + UPDATED_RAG_SOCIALE);
+
+        // Get all the fatturePassivoList where ragSociale equals to UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldNotBeFound("ragSociale.in=" + UPDATED_RAG_SOCIALE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale is not null
+        defaultFatturePassivoShouldBeFound("ragSociale.specified=true");
+
+        // Get all the fatturePassivoList where ragSociale is null
+        defaultFatturePassivoShouldNotBeFound("ragSociale.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeContainsSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale contains DEFAULT_RAG_SOCIALE
+        defaultFatturePassivoShouldBeFound("ragSociale.contains=" + DEFAULT_RAG_SOCIALE);
+
+        // Get all the fatturePassivoList where ragSociale contains UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldNotBeFound("ragSociale.contains=" + UPDATED_RAG_SOCIALE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByRagSocialeNotContainsSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where ragSociale does not contain DEFAULT_RAG_SOCIALE
+        defaultFatturePassivoShouldNotBeFound("ragSociale.doesNotContain=" + DEFAULT_RAG_SOCIALE);
+
+        // Get all the fatturePassivoList where ragSociale does not contain UPDATED_RAG_SOCIALE
+        defaultFatturePassivoShouldBeFound("ragSociale.doesNotContain=" + UPDATED_RAG_SOCIALE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore equals to DEFAULT_NOME_FORNITORE
+        defaultFatturePassivoShouldBeFound("nomeFornitore.equals=" + DEFAULT_NOME_FORNITORE);
+
+        // Get all the fatturePassivoList where nomeFornitore equals to UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.equals=" + UPDATED_NOME_FORNITORE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore not equals to DEFAULT_NOME_FORNITORE
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.notEquals=" + DEFAULT_NOME_FORNITORE);
+
+        // Get all the fatturePassivoList where nomeFornitore not equals to UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldBeFound("nomeFornitore.notEquals=" + UPDATED_NOME_FORNITORE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore in DEFAULT_NOME_FORNITORE or UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldBeFound("nomeFornitore.in=" + DEFAULT_NOME_FORNITORE + "," + UPDATED_NOME_FORNITORE);
+
+        // Get all the fatturePassivoList where nomeFornitore equals to UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.in=" + UPDATED_NOME_FORNITORE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore is not null
+        defaultFatturePassivoShouldBeFound("nomeFornitore.specified=true");
+
+        // Get all the fatturePassivoList where nomeFornitore is null
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreContainsSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore contains DEFAULT_NOME_FORNITORE
+        defaultFatturePassivoShouldBeFound("nomeFornitore.contains=" + DEFAULT_NOME_FORNITORE);
+
+        // Get all the fatturePassivoList where nomeFornitore contains UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.contains=" + UPDATED_NOME_FORNITORE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByNomeFornitoreNotContainsSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where nomeFornitore does not contain DEFAULT_NOME_FORNITORE
+        defaultFatturePassivoShouldNotBeFound("nomeFornitore.doesNotContain=" + DEFAULT_NOME_FORNITORE);
+
+        // Get all the fatturePassivoList where nomeFornitore does not contain UPDATED_NOME_FORNITORE
+        defaultFatturePassivoShouldBeFound("nomeFornitore.doesNotContain=" + UPDATED_NOME_FORNITORE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile equals to DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.equals=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile equals to UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.equals=" + UPDATED_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile not equals to DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.notEquals=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile not equals to UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.notEquals=" + UPDATED_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile in DEFAULT_IMPONIBILE or UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.in=" + DEFAULT_IMPONIBILE + "," + UPDATED_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile equals to UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.in=" + UPDATED_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile is not null
+        defaultFatturePassivoShouldBeFound("imponibile.specified=true");
+
+        // Get all the fatturePassivoList where imponibile is null
+        defaultFatturePassivoShouldNotBeFound("imponibile.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile is greater than or equal to DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.greaterThanOrEqual=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile is greater than or equal to UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.greaterThanOrEqual=" + UPDATED_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile is less than or equal to DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.lessThanOrEqual=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile is less than or equal to SMALLER_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.lessThanOrEqual=" + SMALLER_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsLessThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile is less than DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.lessThan=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile is less than UPDATED_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.lessThan=" + UPDATED_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByImponibileIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where imponibile is greater than DEFAULT_IMPONIBILE
+        defaultFatturePassivoShouldNotBeFound("imponibile.greaterThan=" + DEFAULT_IMPONIBILE);
+
+        // Get all the fatturePassivoList where imponibile is greater than SMALLER_IMPONIBILE
+        defaultFatturePassivoShouldBeFound("imponibile.greaterThan=" + SMALLER_IMPONIBILE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva equals to DEFAULT_IVA
+        defaultFatturePassivoShouldBeFound("iva.equals=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva equals to UPDATED_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.equals=" + UPDATED_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva not equals to DEFAULT_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.notEquals=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva not equals to UPDATED_IVA
+        defaultFatturePassivoShouldBeFound("iva.notEquals=" + UPDATED_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva in DEFAULT_IVA or UPDATED_IVA
+        defaultFatturePassivoShouldBeFound("iva.in=" + DEFAULT_IVA + "," + UPDATED_IVA);
+
+        // Get all the fatturePassivoList where iva equals to UPDATED_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.in=" + UPDATED_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva is not null
+        defaultFatturePassivoShouldBeFound("iva.specified=true");
+
+        // Get all the fatturePassivoList where iva is null
+        defaultFatturePassivoShouldNotBeFound("iva.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsGreaterThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva is greater than or equal to DEFAULT_IVA
+        defaultFatturePassivoShouldBeFound("iva.greaterThanOrEqual=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva is greater than or equal to UPDATED_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.greaterThanOrEqual=" + UPDATED_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsLessThanOrEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva is less than or equal to DEFAULT_IVA
+        defaultFatturePassivoShouldBeFound("iva.lessThanOrEqual=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva is less than or equal to SMALLER_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.lessThanOrEqual=" + SMALLER_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsLessThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva is less than DEFAULT_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.lessThan=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva is less than UPDATED_IVA
+        defaultFatturePassivoShouldBeFound("iva.lessThan=" + UPDATED_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByIvaIsGreaterThanSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where iva is greater than DEFAULT_IVA
+        defaultFatturePassivoShouldNotBeFound("iva.greaterThan=" + DEFAULT_IVA);
+
+        // Get all the fatturePassivoList where iva is greater than SMALLER_IVA
+        defaultFatturePassivoShouldBeFound("iva.greaterThan=" + SMALLER_IVA);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByStatoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where stato equals to DEFAULT_STATO
+        defaultFatturePassivoShouldBeFound("stato.equals=" + DEFAULT_STATO);
+
+        // Get all the fatturePassivoList where stato equals to UPDATED_STATO
+        defaultFatturePassivoShouldNotBeFound("stato.equals=" + UPDATED_STATO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByStatoIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where stato not equals to DEFAULT_STATO
+        defaultFatturePassivoShouldNotBeFound("stato.notEquals=" + DEFAULT_STATO);
+
+        // Get all the fatturePassivoList where stato not equals to UPDATED_STATO
+        defaultFatturePassivoShouldBeFound("stato.notEquals=" + UPDATED_STATO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByStatoIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where stato in DEFAULT_STATO or UPDATED_STATO
+        defaultFatturePassivoShouldBeFound("stato.in=" + DEFAULT_STATO + "," + UPDATED_STATO);
+
+        // Get all the fatturePassivoList where stato equals to UPDATED_STATO
+        defaultFatturePassivoShouldNotBeFound("stato.in=" + UPDATED_STATO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByStatoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where stato is not null
+        defaultFatturePassivoShouldBeFound("stato.specified=true");
+
+        // Get all the fatturePassivoList where stato is null
+        defaultFatturePassivoShouldNotBeFound("stato.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataEmissioneIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataEmissione equals to DEFAULT_DATA_EMISSIONE
+        defaultFatturePassivoShouldBeFound("dataEmissione.equals=" + DEFAULT_DATA_EMISSIONE);
+
+        // Get all the fatturePassivoList where dataEmissione equals to UPDATED_DATA_EMISSIONE
+        defaultFatturePassivoShouldNotBeFound("dataEmissione.equals=" + UPDATED_DATA_EMISSIONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataEmissioneIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataEmissione not equals to DEFAULT_DATA_EMISSIONE
+        defaultFatturePassivoShouldNotBeFound("dataEmissione.notEquals=" + DEFAULT_DATA_EMISSIONE);
+
+        // Get all the fatturePassivoList where dataEmissione not equals to UPDATED_DATA_EMISSIONE
+        defaultFatturePassivoShouldBeFound("dataEmissione.notEquals=" + UPDATED_DATA_EMISSIONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataEmissioneIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataEmissione in DEFAULT_DATA_EMISSIONE or UPDATED_DATA_EMISSIONE
+        defaultFatturePassivoShouldBeFound("dataEmissione.in=" + DEFAULT_DATA_EMISSIONE + "," + UPDATED_DATA_EMISSIONE);
+
+        // Get all the fatturePassivoList where dataEmissione equals to UPDATED_DATA_EMISSIONE
+        defaultFatturePassivoShouldNotBeFound("dataEmissione.in=" + UPDATED_DATA_EMISSIONE);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataEmissioneIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataEmissione is not null
+        defaultFatturePassivoShouldBeFound("dataEmissione.specified=true");
+
+        // Get all the fatturePassivoList where dataEmissione is null
+        defaultFatturePassivoShouldNotBeFound("dataEmissione.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataPagamentoIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataPagamento equals to DEFAULT_DATA_PAGAMENTO
+        defaultFatturePassivoShouldBeFound("dataPagamento.equals=" + DEFAULT_DATA_PAGAMENTO);
+
+        // Get all the fatturePassivoList where dataPagamento equals to UPDATED_DATA_PAGAMENTO
+        defaultFatturePassivoShouldNotBeFound("dataPagamento.equals=" + UPDATED_DATA_PAGAMENTO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataPagamentoIsNotEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataPagamento not equals to DEFAULT_DATA_PAGAMENTO
+        defaultFatturePassivoShouldNotBeFound("dataPagamento.notEquals=" + DEFAULT_DATA_PAGAMENTO);
+
+        // Get all the fatturePassivoList where dataPagamento not equals to UPDATED_DATA_PAGAMENTO
+        defaultFatturePassivoShouldBeFound("dataPagamento.notEquals=" + UPDATED_DATA_PAGAMENTO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataPagamentoIsInShouldWork() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataPagamento in DEFAULT_DATA_PAGAMENTO or UPDATED_DATA_PAGAMENTO
+        defaultFatturePassivoShouldBeFound("dataPagamento.in=" + DEFAULT_DATA_PAGAMENTO + "," + UPDATED_DATA_PAGAMENTO);
+
+        // Get all the fatturePassivoList where dataPagamento equals to UPDATED_DATA_PAGAMENTO
+        defaultFatturePassivoShouldNotBeFound("dataPagamento.in=" + UPDATED_DATA_PAGAMENTO);
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByDataPagamentoIsNullOrNotNull() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+
+        // Get all the fatturePassivoList where dataPagamento is not null
+        defaultFatturePassivoShouldBeFound("dataPagamento.specified=true");
+
+        // Get all the fatturePassivoList where dataPagamento is null
+        defaultFatturePassivoShouldNotBeFound("dataPagamento.specified=false");
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByFornitoreIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+        Fornitore fornitore;
+        if (TestUtil.findAll(em, Fornitore.class).isEmpty()) {
+            fornitore = FornitoreResourceIT.createEntity(em);
+            em.persist(fornitore);
+            em.flush();
+        } else {
+            fornitore = TestUtil.findAll(em, Fornitore.class).get(0);
+        }
+        em.persist(fornitore);
+        em.flush();
+        fatturePassivo.setFornitore(fornitore);
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+        Long fornitoreId = fornitore.getId();
+
+        // Get all the fatturePassivoList where fornitore equals to fornitoreId
+        defaultFatturePassivoShouldBeFound("fornitoreId.equals=" + fornitoreId);
+
+        // Get all the fatturePassivoList where fornitore equals to (fornitoreId + 1)
+        defaultFatturePassivoShouldNotBeFound("fornitoreId.equals=" + (fornitoreId + 1));
+    }
+
+    @Test
+    @Transactional
+    void getAllFatturePassivosByCantiereIsEqualToSomething() throws Exception {
+        // Initialize the database
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+        Cantiere cantiere;
+        if (TestUtil.findAll(em, Cantiere.class).isEmpty()) {
+            cantiere = CantiereResourceIT.createEntity(em);
+            em.persist(cantiere);
+            em.flush();
+        } else {
+            cantiere = TestUtil.findAll(em, Cantiere.class).get(0);
+        }
+        em.persist(cantiere);
+        em.flush();
+        fatturePassivo.setCantiere(cantiere);
+        fatturePassivoRepository.saveAndFlush(fatturePassivo);
+        Long cantiereId = cantiere.getId();
+
+        // Get all the fatturePassivoList where cantiere equals to cantiereId
+        defaultFatturePassivoShouldBeFound("cantiereId.equals=" + cantiereId);
+
+        // Get all the fatturePassivoList where cantiere equals to (cantiereId + 1)
+        defaultFatturePassivoShouldNotBeFound("cantiereId.equals=" + (cantiereId + 1));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is returned.
+     */
+    private void defaultFatturePassivoShouldBeFound(String filter) throws Exception {
+        restFatturePassivoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$.[*].id").value(hasItem(fatturePassivo.getId().intValue())))
+            .andExpect(jsonPath("$.[*].numeroFattura").value(hasItem(DEFAULT_NUMERO_FATTURA.intValue())))
+            .andExpect(jsonPath("$.[*].ragSociale").value(hasItem(DEFAULT_RAG_SOCIALE)))
+            .andExpect(jsonPath("$.[*].nomeFornitore").value(hasItem(DEFAULT_NOME_FORNITORE)))
+            .andExpect(jsonPath("$.[*].imponibile").value(hasItem(DEFAULT_IMPONIBILE.intValue())))
+            .andExpect(jsonPath("$.[*].iva").value(hasItem(DEFAULT_IVA.intValue())))
+            .andExpect(jsonPath("$.[*].stato").value(hasItem(DEFAULT_STATO.toString())))
+            .andExpect(jsonPath("$.[*].dataEmissione").value(hasItem(DEFAULT_DATA_EMISSIONE.toString())))
+            .andExpect(jsonPath("$.[*].dataPagamento").value(hasItem(DEFAULT_DATA_PAGAMENTO.toString())));
+
+        // Check, that the count call also returns 1
+        restFatturePassivoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("1"));
+    }
+
+    /**
+     * Executes the search, and checks that the default entity is not returned.
+     */
+    private void defaultFatturePassivoShouldNotBeFound(String filter) throws Exception {
+        restFatturePassivoMockMvc
+            .perform(get(ENTITY_API_URL + "?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(jsonPath("$").isArray())
+            .andExpect(jsonPath("$").isEmpty());
+
+        // Check, that the count call also returns 0
+        restFatturePassivoMockMvc
+            .perform(get(ENTITY_API_URL + "/count?sort=id,desc&" + filter))
+            .andExpect(status().isOk())
+            .andExpect(content().contentType(MediaType.APPLICATION_JSON_VALUE))
+            .andExpect(content().string("0"));
     }
 
     @Test

@@ -7,19 +7,19 @@ import java.net.URISyntaxException;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
-import java.util.stream.Collectors;
 import java.util.stream.StreamSupport;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import org.econ.domain.FatturePassivo;
 import org.econ.repository.FatturePassivoRepository;
-import org.econ.repository.search.FatturePassivoSearchRepository;
+import org.econ.service.FatturePassivoQueryService;
+import org.econ.service.FatturePassivoService;
+import org.econ.service.criteria.FatturePassivoCriteria;
 import org.econ.web.rest.errors.BadRequestAlertException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.ResponseEntity;
-import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.*;
 import tech.jhipster.web.util.HeaderUtil;
 import tech.jhipster.web.util.ResponseUtil;
@@ -29,7 +29,6 @@ import tech.jhipster.web.util.ResponseUtil;
  */
 @RestController
 @RequestMapping("/api")
-@Transactional
 public class FatturePassivoResource {
 
     private final Logger log = LoggerFactory.getLogger(FatturePassivoResource.class);
@@ -39,16 +38,20 @@ public class FatturePassivoResource {
     @Value("${jhipster.clientApp.name}")
     private String applicationName;
 
+    private final FatturePassivoService fatturePassivoService;
+
     private final FatturePassivoRepository fatturePassivoRepository;
 
-    private final FatturePassivoSearchRepository fatturePassivoSearchRepository;
+    private final FatturePassivoQueryService fatturePassivoQueryService;
 
     public FatturePassivoResource(
+        FatturePassivoService fatturePassivoService,
         FatturePassivoRepository fatturePassivoRepository,
-        FatturePassivoSearchRepository fatturePassivoSearchRepository
+        FatturePassivoQueryService fatturePassivoQueryService
     ) {
+        this.fatturePassivoService = fatturePassivoService;
         this.fatturePassivoRepository = fatturePassivoRepository;
-        this.fatturePassivoSearchRepository = fatturePassivoSearchRepository;
+        this.fatturePassivoQueryService = fatturePassivoQueryService;
     }
 
     /**
@@ -65,8 +68,7 @@ public class FatturePassivoResource {
         if (fatturePassivo.getId() != null) {
             throw new BadRequestAlertException("A new fatturePassivo cannot already have an ID", ENTITY_NAME, "idexists");
         }
-        FatturePassivo result = fatturePassivoRepository.save(fatturePassivo);
-        fatturePassivoSearchRepository.save(result);
+        FatturePassivo result = fatturePassivoService.save(fatturePassivo);
         return ResponseEntity
             .created(new URI("/api/fatture-passivos/" + result.getId()))
             .headers(HeaderUtil.createEntityCreationAlert(applicationName, true, ENTITY_NAME, result.getId().toString()))
@@ -100,8 +102,7 @@ public class FatturePassivoResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        FatturePassivo result = fatturePassivoRepository.save(fatturePassivo);
-        fatturePassivoSearchRepository.save(result);
+        FatturePassivo result = fatturePassivoService.save(fatturePassivo);
         return ResponseEntity
             .ok()
             .headers(HeaderUtil.createEntityUpdateAlert(applicationName, true, ENTITY_NAME, fatturePassivo.getId().toString()))
@@ -136,42 +137,7 @@ public class FatturePassivoResource {
             throw new BadRequestAlertException("Entity not found", ENTITY_NAME, "idnotfound");
         }
 
-        Optional<FatturePassivo> result = fatturePassivoRepository
-            .findById(fatturePassivo.getId())
-            .map(existingFatturePassivo -> {
-                if (fatturePassivo.getNumeroFattura() != null) {
-                    existingFatturePassivo.setNumeroFattura(fatturePassivo.getNumeroFattura());
-                }
-                if (fatturePassivo.getRagSociale() != null) {
-                    existingFatturePassivo.setRagSociale(fatturePassivo.getRagSociale());
-                }
-                if (fatturePassivo.getNomeFornitore() != null) {
-                    existingFatturePassivo.setNomeFornitore(fatturePassivo.getNomeFornitore());
-                }
-                if (fatturePassivo.getImponibile() != null) {
-                    existingFatturePassivo.setImponibile(fatturePassivo.getImponibile());
-                }
-                if (fatturePassivo.getIva() != null) {
-                    existingFatturePassivo.setIva(fatturePassivo.getIva());
-                }
-                if (fatturePassivo.getStato() != null) {
-                    existingFatturePassivo.setStato(fatturePassivo.getStato());
-                }
-                if (fatturePassivo.getDataEmissione() != null) {
-                    existingFatturePassivo.setDataEmissione(fatturePassivo.getDataEmissione());
-                }
-                if (fatturePassivo.getDataPagamento() != null) {
-                    existingFatturePassivo.setDataPagamento(fatturePassivo.getDataPagamento());
-                }
-
-                return existingFatturePassivo;
-            })
-            .map(fatturePassivoRepository::save)
-            .map(savedFatturePassivo -> {
-                fatturePassivoSearchRepository.save(savedFatturePassivo);
-
-                return savedFatturePassivo;
-            });
+        Optional<FatturePassivo> result = fatturePassivoService.partialUpdate(fatturePassivo);
 
         return ResponseUtil.wrapOrNotFound(
             result,
@@ -182,12 +148,26 @@ public class FatturePassivoResource {
     /**
      * {@code GET  /fatture-passivos} : get all the fatturePassivos.
      *
+     * @param criteria the criteria which the requested entities should match.
      * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the list of fatturePassivos in body.
      */
     @GetMapping("/fatture-passivos")
-    public List<FatturePassivo> getAllFatturePassivos() {
-        log.debug("REST request to get all FatturePassivos");
-        return fatturePassivoRepository.findAll();
+    public ResponseEntity<List<FatturePassivo>> getAllFatturePassivos(FatturePassivoCriteria criteria) {
+        log.debug("REST request to get FatturePassivos by criteria: {}", criteria);
+        List<FatturePassivo> entityList = fatturePassivoQueryService.findByCriteria(criteria);
+        return ResponseEntity.ok().body(entityList);
+    }
+
+    /**
+     * {@code GET  /fatture-passivos/count} : count all the fatturePassivos.
+     *
+     * @param criteria the criteria which the requested entities should match.
+     * @return the {@link ResponseEntity} with status {@code 200 (OK)} and the count in body.
+     */
+    @GetMapping("/fatture-passivos/count")
+    public ResponseEntity<Long> countFatturePassivos(FatturePassivoCriteria criteria) {
+        log.debug("REST request to count FatturePassivos by criteria: {}", criteria);
+        return ResponseEntity.ok().body(fatturePassivoQueryService.countByCriteria(criteria));
     }
 
     /**
@@ -199,7 +179,7 @@ public class FatturePassivoResource {
     @GetMapping("/fatture-passivos/{id}")
     public ResponseEntity<FatturePassivo> getFatturePassivo(@PathVariable Long id) {
         log.debug("REST request to get FatturePassivo : {}", id);
-        Optional<FatturePassivo> fatturePassivo = fatturePassivoRepository.findById(id);
+        Optional<FatturePassivo> fatturePassivo = fatturePassivoService.findOne(id);
         return ResponseUtil.wrapOrNotFound(fatturePassivo);
     }
 
@@ -212,8 +192,7 @@ public class FatturePassivoResource {
     @DeleteMapping("/fatture-passivos/{id}")
     public ResponseEntity<Void> deleteFatturePassivo(@PathVariable Long id) {
         log.debug("REST request to delete FatturePassivo : {}", id);
-        fatturePassivoRepository.deleteById(id);
-        fatturePassivoSearchRepository.deleteById(id);
+        fatturePassivoService.delete(id);
         return ResponseEntity
             .noContent()
             .headers(HeaderUtil.createEntityDeletionAlert(applicationName, true, ENTITY_NAME, id.toString()))
@@ -230,6 +209,6 @@ public class FatturePassivoResource {
     @GetMapping("/_search/fatture-passivos")
     public List<FatturePassivo> searchFatturePassivos(@RequestParam String query) {
         log.debug("REST request to search FatturePassivos for query {}", query);
-        return StreamSupport.stream(fatturePassivoSearchRepository.search(query).spliterator(), false).collect(Collectors.toList());
+        return fatturePassivoService.search(query);
     }
 }
