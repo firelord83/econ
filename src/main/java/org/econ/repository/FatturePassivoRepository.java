@@ -9,4 +9,4 @@ import org.springframework.stereotype.Repository;
  */
 @SuppressWarnings("unused")
 @Repository
-public interface FatturePassivoRepository extends JpaRepository<FatturePassivo, Long> {}
+public interface FatturePassivoRepository extends JpaRepository<FatturePassivo, Long>, JpaSpecificationExecutor<FatturePassivo> {}
